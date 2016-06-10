@@ -46,6 +46,12 @@ Player.prototype.step = function(dt) {
     this.vx = 0;
   }
   this.x += this.vx * dt;
+
+  if(this.x < 0) {
+    this.x = 0;
+  } else if(this.x > Game.width - this.w) {
+    this.x = Game.width - this.w;
+  }
 };
 
 var Computer = function(clear) {
@@ -70,7 +76,6 @@ var Ball = function() {
 
 Ball.prototype.step = function(dt) {
   var d = this.v * dt;
-  console.log(d);
   this.x += d * Math.cos(this.radian);
   this.y += d * Math.sin(this.radian);
 };

@@ -9,7 +9,7 @@ window.addEventListener("load", function() {
 });
 
 var startGame = function() {
-  Game.setBoard(0, new TitleScreen("blocPONG",
+  Game.setBoard(0, new Banner("blocPONG",
                                    "Press <space> to RAGE",
                                    true,
                                    playGame));
@@ -17,21 +17,22 @@ var startGame = function() {
 
 var playGame = function() {
   var gameBoard = new GameBoard();
-  gameBoard.add( new Paddle(20, 100, 200, true) );
-  Game.setBoard(0, gameBoard);
+  gameBoard.add( new Player(false) );
+  gameBoard.add( new Computer(false) );
+  Game.setBoard(1, gameBoard);
 };
 
-var Paddle = function(height, width, maxVel, clear) {
-  this.w = width;
-  this.h = height;
+var Player = function(clear) {
+  this.w = 100;
+  this.h = 20;
   this.x = Game.width/2 - this.w / 2;
-  // this.y = Game.height - this.h;
   this.y = Game.height - 10 - this.h;
-  this.maxVel = maxVel;
+  this.maxVel = 200;
   this.clear = clear;
 };
 
-Paddle.prototype.step = function(dt) {
+Player.prototype = new Paddle();
+Player.prototype.step = function(dt) {
   if(Game.keys["left"]) {
     this.vx = -this.maxVel;
   } else if(Game.keys["right"]) {
@@ -42,19 +43,14 @@ Paddle.prototype.step = function(dt) {
   this.x += this.vx * dt;
 };
 
-Paddle.prototype.draw = function(ctx) {
-
-  if (this.clear) {
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0,0,Game.width,Game.height);
-  }
-  ctx.beginPath();
-  ctx.rect(this.x, this.y, this.w, this.h);
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "#00FF00";
-  ctx.stroke();
-  ctx.fillStyle = "#00FF00";
-  ctx.fill();
-  ctx.closePath();
-  ctx.lineWidth = 1;
+var Computer = function(clear) {
+  this.w = 100;
+  this.h = 20;
+  this.x = Game.width/2 - this.w / 2;
+  this.y = 10;
+  this.maxVel = 200;
+  this.clear = clear;
 };
+
+Computer.prototype = new Paddle();
+Computer.prototype.step = function() { };

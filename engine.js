@@ -56,7 +56,7 @@ var Game = (function() {
   return this;
 })();
 
-var TitleScreen = function TitleScreen(title, subtitle, clear, callback) {
+var Banner = function Banner(title, subtitle, clear, callback) {
   var up = false;
 
   this.step = function(dt) {
@@ -152,3 +152,21 @@ var GameBoard = function() {
   };
 
 }
+
+var Paddle = function() { };
+
+Paddle.prototype.draw = function(ctx) {
+  if (this.clear) {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0,0,Game.width,Game.height);
+  }
+  ctx.beginPath();
+  ctx.rect(this.x, this.y, this.w, this.h);
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "#00FF00";
+  ctx.stroke();
+  ctx.fillStyle = "#00FF00";
+  ctx.fill();
+  ctx.closePath();
+  ctx.lineWidth = 1;
+};

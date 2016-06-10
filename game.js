@@ -4,6 +4,10 @@
 // Souma Mondal
 
 //
+
+var PI = Math.PI;
+
+
 window.addEventListener("load", function() {
   Game.initialize("game", startGame);
 });
@@ -17,8 +21,9 @@ var startGame = function() {
 
 var playGame = function() {
   var gameBoard = new GameBoard();
-  gameBoard.add( new Player(false) );
+  gameBoard.add( new Player(true) );
   gameBoard.add( new Computer(false) );
+  gameBoard.add( new Ball() );
   Game.setBoard(1, gameBoard);
 };
 
@@ -54,3 +59,28 @@ var Computer = function(clear) {
 
 Computer.prototype = new Paddle();
 Computer.prototype.step = function() { };
+
+var Ball = function() {
+  this.x = Game.width / 2;
+  this.y = Game.height / 2;
+  this.radius = 5;
+  this.v = 10;
+  this.radian = PI/4;
+};
+
+Ball.prototype.step = function(dt) {
+  var d = this.v * dt;
+  console.log(d);
+  this.x += d * Math.cos(this.radian);
+  this.y += d * Math.sin(this.radian);
+};
+
+Ball.prototype.draw = function(ctx) {
+  ctx.beginPath();
+  ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+  ctx.strokeStyle = "#00FF00";
+  ctx.stroke();
+  ctx.fillStyle = "#00FF00";
+  ctx.fill();
+  ctx.closePath();
+};

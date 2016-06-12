@@ -18,7 +18,8 @@ var Game = (function() {
     callback();
   };
 
-  var KEY_CODES = { 37: "left", 39: "right", 32: "space" };
+  var KEY_CODES = { 37: "left", 39: "right", 32: "space",
+                    90: "cleft", 88: "cright"};
   this.keys = {};
 
   this.setupInput = function() {
@@ -98,7 +99,7 @@ var GameBoard = function() {
   };
 
   this.remove = function(obj) {
-    var idx = this.remove.indexOf(obj);
+    var idx = this.removed.indexOf(obj);
     if(idx === -1) {
       this.removed.push(obj);
       return true;
@@ -133,7 +134,7 @@ var GameBoard = function() {
   // find the first object for which func is true
   // otherwise return false
   this.detect = function(func) {
-    for(var i = 0, val = null, len = this.objects.length; i < len; ++i) {
+    for(var i = 0, len = this.objects.length; i < len; ++i) {
       if( func.call(this.objects[i]) ) {
         return this.objects[i];
       }
@@ -151,7 +152,45 @@ var GameBoard = function() {
     this.iterate('draw', ctx);
   };
 
-}
+  this.overlap = function(o1, o2) {
+    return !( (o1.y + o1.h - 1 < o2.y) ||
+              (o2.y + o2.h - 1 < o1.y) ||
+              (o1.x + o1.w - 1 < o2.x) ||
+              (o2.x + o2.w - 1 < o1.x) );
+  };
+
+  this.bounce = function(ball, paddle) {
+    return !( (ball.x + ball.w < paddle.x) ||
+              (paddle.x + paddle.w < ball.x) );
+  };
+
+  this.bounceAngle = function(ball, paddle) {
+    // eventually, I want this thing to adjust the ngle of reflection
+    // based on where along the paddle the ball makes contact
+    // for now a simple reflection will suffice
+    ball.vy *= -1;
+    // var magnitude = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+  }
+
+  this.collide = function(obj, type) {
+    return this.detect(function() {
+      if(obj !== this) {
+        var col = (!type || this.type & type) && board.overlap(obj, this);
+        return col ? this : false;
+      }
+    });
+  };
+
+  this.reflect = function(obj, type) {
+    return this.detect(function() {
+      if(obj !== this) {
+        var col = (!type || this.type & type) && board.bounce(obj, this);
+        return col ? this : false;
+      }
+    });
+  };
+
+};
 
 var Paddle = function() { };
 

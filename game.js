@@ -6,6 +6,11 @@
 //
 
 var PI = Math.PI;
+var ENDZONE = 30;
+
+var OBJECT_BALL = 1,
+    OBJECT_PLAYER = 2,
+    OBJECT_COMPUTER = 4;
 
 
 window.addEventListener("load", function() {
@@ -14,9 +19,9 @@ window.addEventListener("load", function() {
 
 var startGame = function() {
   Game.setBoard(0, new Banner("blocPONG",
-                                   "Press <space> to RAGE",
-                                   true,
-                                   playGame));
+                              "Press <space> to RAGE",
+                              true,
+                              playGame));
 };
 
 var playGame = function() {
@@ -29,14 +34,15 @@ var playGame = function() {
 
 var Player = function(clear) {
   this.w = 100;
-  this.h = 20;
+  this.h = 5;
   this.x = Game.width/2 - this.w / 2;
-  this.y = Game.height - 10 - this.h;
+  this.y = Game.height - ENDZONE;
   this.maxVel = 200;
   this.clear = clear;
 };
 
 Player.prototype = new Paddle();
+Player.prototype.type = OBJECT_PLAYER;
 Player.prototype.step = function(dt) {
   if(Game.keys["left"]) {
     this.vx = -this.maxVel;
@@ -56,36 +62,87 @@ Player.prototype.step = function(dt) {
 
 var Computer = function(clear) {
   this.w = 100;
-  this.h = 20;
+  this.h = 5;
   this.x = Game.width/2 - this.w / 2;
-  this.y = 10;
+  this.y = ENDZONE - this.h;
   this.maxVel = 200;
   this.clear = clear;
 };
 
 Computer.prototype = new Paddle();
-Computer.prototype.step = function() { };
+Computer.prototype.type = OBJECT_COMPUTER;
+Computer.prototype.step = function(dt) {
+  // THIS IS TEMPORARY
+  if(Game.keys["cleft"]) {
+    this.vx = -this.maxVel;
+  } else if(Game.keys["cright"]) {
+    this.vx = this.maxVel;
+  } else {
+    this.vx = 0;
+  }
+  this.x += this.vx * dt;
+
+  if(this.x < 0) {
+    this.x = 0;
+  } else if(this.x > Game.width - this.w) {
+    this.x = Game.width - this.w;
+  }
+};
 
 var Ball = function() {
   this.x = Game.width / 2;
   this.y = Game.height / 2;
   this.radius = 5;
-  this.v = 10;
+  this.w = this.radius * 2;
+  this.h = this.radius * 2;
+
+  var magnitude = 500;
+  var theta = - PI / 4;
+  this.vx = magnitude * Math.cos(theta);
+  this.vy = magnitude * Math.sin(theta);
   this.radian = PI/4;
+  this.dead = false;
 };
 
+Ball.prototype.type = OBJECT_BALL;
+
 Ball.prototype.step = function(dt) {
-  var d = this.v * dt;
-  this.x += d * Math.cos(this.radian);
-  this.y += d * Math.sin(this.radian);
+  this.x += this.vx * dt;
+  this.y += this.vy * dt;
+
+  // bounce off walls
+  if (this.x < 0 || this.x + this.w > Game.width) {
+    this.vx = -this.vx;
+  }
+  // pass through floor or ceiling
+  if (this.y < 0 || this.y > Game.height - this.h) {
+    this.board.remove(this);
+  }
+
+  // reflection is a strange one.
+  // it is either an object or false
+  var reflection;
+  if (this.y + this.h > Game.height - ENDZONE && !this.dead) {
+    reflection = this.board.reflect(this, OBJECT_PLAYER);
+    reflection ? this.board.bounceAngle(this, reflection) : this.dead = true;
+  }
+  if (this.y < ENDZONE && !this.dead) {
+    reflection = this.board.reflect(this, OBJECT_COMPUTER);
+    reflection ? this.board.bounceAngle(this, reflection) : this.dead = true;
+  }
 };
 
 Ball.prototype.draw = function(ctx) {
+  if (this.dead) {
+    ctx.strokeStyle = "#FF0000";
+    ctx.fillStyle = "#FF0000";
+  } else {
+    ctx.strokeStyle = "#00FF00";
+    ctx.fillStyle = "#00FF00";
+  }
   ctx.beginPath();
-  ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
-  ctx.strokeStyle = "#00FF00";
+  ctx.arc(this.x + this.radius, this.y + this.radius, this.radius, 0, 2*Math.PI);
   ctx.stroke();
-  ctx.fillStyle = "#00FF00";
   ctx.fill();
   ctx.closePath();
 };

@@ -7,6 +7,7 @@
 
 var PI = Math.PI;
 var ENDZONE = 30;
+var ANGLE_SCALE_FACTOR = PI / 6;
 
 var OBJECT_BALL = 1,
     OBJECT_PLAYER = 2,
@@ -96,8 +97,8 @@ var Ball = function() {
   this.w = this.radius * 2;
   this.h = this.radius * 2;
 
-  var magnitude = 500;
-  var theta = - PI / 4;
+  var magnitude = 200;
+  var theta = PI / 2;
   this.vx = magnitude * Math.cos(theta);
   this.vy = magnitude * Math.sin(theta);
   this.radian = PI/4;
@@ -124,11 +125,11 @@ Ball.prototype.step = function(dt) {
   var reflection;
   if (this.y + this.h > Game.height - ENDZONE && !this.dead) {
     reflection = this.board.reflect(this, OBJECT_PLAYER);
-    reflection ? this.board.bounceAngle(this, reflection) : this.dead = true;
+    reflection ? this.board.bounceAngle(this, reflection, OBJECT_PLAYER) : this.dead = true;
   }
   if (this.y < ENDZONE && !this.dead) {
     reflection = this.board.reflect(this, OBJECT_COMPUTER);
-    reflection ? this.board.bounceAngle(this, reflection) : this.dead = true;
+    reflection ? this.board.bounceAngle(this, reflection, OBJECT_COMPUTER) : this.dead = true;
   }
 };
 

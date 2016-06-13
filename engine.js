@@ -164,13 +164,38 @@ var GameBoard = function() {
               (paddle.x + paddle.w < ball.x) );
   };
 
-  this.bounceAngle = function(ball, paddle) {
+  this.bounceAngle = function(ball, paddle, type) {
     // eventually, I want this thing to adjust the ngle of reflection
     // based on where along the paddle the ball makes contact
     // for now a simple reflection will suffice
-    ball.vy *= -1;
-    // var magnitude = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
-  }
+    //ball.vy *= -1;
+    var magnitude = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+
+    // this next bit caused me to tear out some hair
+    // http://hyperphysics.phy-astr.gsu.edu/hbase/ttrig.html#c3
+    // basically, F**k atan...
+    var angleIn = Math.atan(ball.vy / ball.vx);
+    if (ball.vx < 0 ) {
+      angleIn += PI;
+    } else if (ball.vx > 0 || ball.vy < 0) {
+      angleIn += 2*PI;
+    }
+
+    var angleOut = 2*PI - angleIn;
+    var angleAdjust = ball.x + ball.radius - paddle.x - (paddle.w / 2);
+    angleAdjust /= (paddle.w / 2);
+
+    if (type === OBJECT_PLAYER) {
+      angleOut += angleAdjust * ANGLE_SCALE_FACTOR;
+    } else if (type === OBJECT_COMPUTER) {
+      angleOut -= angleAdjust * ANGLE_SCALE_FACTOR;
+    }
+
+    console.log("angleOut: " + angleOut * 180 / PI);
+
+    ball.vx = magnitude * Math.cos(angleOut);
+    ball.vy = magnitude * Math.sin(angleOut);
+  };
 
   this.collide = function(obj, type) {
     return this.detect(function() {

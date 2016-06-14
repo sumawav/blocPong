@@ -13,7 +13,6 @@ var OBJECT_BALL = 1,
     OBJECT_PLAYER = 2,
     OBJECT_COMPUTER = 4;
 
-
 window.addEventListener("load", function() {
   Game.initialize("game", startGame);
 });

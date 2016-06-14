@@ -165,9 +165,9 @@ var GameBoard = function() {
   };
 
   this.bounceAngle = function(ball, paddle, type) {
-    // eventually, I want this thing to adjust the ngle of reflection
-    // based on where along the paddle the ball makes contact
-    // for now a simple reflection will suffice
+    // this code is a bit buggy occasionally
+    // but it's till way more fun than a static reflection
+    // i'm including the original code commented just in case
     //ball.vy *= -1;
     var magnitude = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
 

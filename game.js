@@ -7,7 +7,7 @@
 
 var PI = Math.PI;
 var ENDZONE = 30;
-var ANGLE_SCALE_FACTOR = PI / 6;
+var ANGLE_SCALE_FACTOR = PI / 12;
 
 var OBJECT_BALL = 1,
     OBJECT_PLAYER = 2,

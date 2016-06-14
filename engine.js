@@ -191,6 +191,12 @@ var GameBoard = function() {
       angleOut -= angleAdjust * ANGLE_SCALE_FACTOR;
     }
 
+    while (angleOut < 0) {
+      angleOut += 2*PI;
+    }
+
+    angleOut %= 2*PI;
+
     console.log("angleOut: " + angleOut * 180 / PI);
 
     ball.vx = magnitude * Math.cos(angleOut);

@@ -8,11 +8,11 @@
 var PI = Math.PI;
 var ENDZONE = 30;
 var PADDLE_WIDTH = 80;
+var ANGLE_SCALE_FACTOR = PI / 12;
 
 var OBJECT_BALL = 1,
     OBJECT_PLAYER = 2,
     OBJECT_COMPUTER = 4;
-
 
 window.addEventListener("load", function() {
   Game.initialize("game", startGame);
@@ -116,6 +116,7 @@ var Ball = function() {
 
   var magnitude = 200;
   var theta = PI / 4;
+  var theta = PI / 2;
   this.vx = magnitude * Math.cos(theta);
   this.vy = magnitude * Math.sin(theta);
   this.radian = PI/4;
@@ -142,11 +143,11 @@ Ball.prototype.step = function(dt) {
   var reflection;
   if (this.y + this.h > Game.height - ENDZONE && !this.dead) {
     reflection = this.board.reflect(this, OBJECT_PLAYER);
-    reflection ? this.board.bounceAngle(this, reflection) : this.dead = true;
+    reflection ? this.board.bounceAngle(this, reflection, OBJECT_PLAYER) : this.dead = true;
   }
   if (this.y < ENDZONE && !this.dead) {
     reflection = this.board.reflect(this, OBJECT_COMPUTER);
-    reflection ? this.board.bounceAngle(this, reflection) : this.dead = true;
+    reflection ? this.board.bounceAngle(this, reflection, OBJECT_COMPUTER) : this.dead = true;
   }
 };
 

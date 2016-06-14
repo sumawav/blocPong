@@ -7,6 +7,7 @@
 
 var PI = Math.PI;
 var ENDZONE = 30;
+var PADDLE_WIDTH = 80;
 
 var OBJECT_BALL = 1,
     OBJECT_PLAYER = 2,
@@ -33,7 +34,7 @@ var playGame = function() {
 };
 
 var Player = function(clear) {
-  this.w = 100;
+  this.w = PADDLE_WIDTH;
   this.h = 5;
   this.x = Game.width/2 - this.w / 2;
   this.y = Game.height - ENDZONE;
@@ -61,25 +62,41 @@ Player.prototype.step = function(dt) {
 };
 
 var Computer = function(clear) {
-  this.w = 100;
+  this.w = PADDLE_WIDTH;
   this.h = 5;
-  this.x = Game.width/2 - this.w / 2;
+  this.x = (Game.width / 2) - (this.w / 2);
   this.y = ENDZONE - this.h;
+  this.vx = 0;
   this.maxVel = 200;
   this.clear = clear;
+  this.target = null;
 };
 
 Computer.prototype = new Paddle();
 Computer.prototype.type = OBJECT_COMPUTER;
 Computer.prototype.step = function(dt) {
-  // THIS IS TEMPORARY
-  if(Game.keys["cleft"]) {
-    this.vx = -this.maxVel;
-  } else if(Game.keys["cright"]) {
-    this.vx = this.maxVel;
+
+  this.target = this.target || this.board.findBall(this);
+
+  // ball in comp side of court
+  if (this.target.y + this.target.radius < Game.height / 3 &&
+       this.target.vy < 0) {
+    // ball to the right of comp
+    if (this.target.x + this.target.radius > this.x + (this.w / 2) ) {
+      this.vx += this.maxVel / 4;
+      if (this.vx > this.maxVel / 2) {
+        this.vx = this.maxVel / 2;
+      }
+    } else if (this.target.x + this.target.radius  < this.x + (this.w / 2) ) {
+      this.vx -= this.maxVel / 4;
+      if (this.vx < -this.maxVel / 2) {
+        this.vx = -this.maxVel / 2;
+      }
+    }
   } else {
     this.vx = 0;
   }
+
   this.x += this.vx * dt;
 
   if(this.x < 0) {
@@ -87,6 +104,7 @@ Computer.prototype.step = function(dt) {
   } else if(this.x > Game.width - this.w) {
     this.x = Game.width - this.w;
   }
+
 };
 
 var Ball = function() {
@@ -96,8 +114,8 @@ var Ball = function() {
   this.w = this.radius * 2;
   this.h = this.radius * 2;
 
-  var magnitude = 500;
-  var theta = - PI / 4;
+  var magnitude = 200;
+  var theta = PI / 4;
   this.vx = magnitude * Math.cos(theta);
   this.vy = magnitude * Math.sin(theta);
   this.radian = PI/4;

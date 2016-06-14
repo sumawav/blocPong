@@ -190,6 +190,15 @@ var GameBoard = function() {
     });
   };
 
+  this.findBall = function(obj) {
+    console.log("called findBall");
+    return this.detect(function() {
+      if(obj !== this) {
+        return this.type === OBJECT_BALL ? this : false;
+      }
+    });
+  }
+
 };
 
 var Paddle = function() { };

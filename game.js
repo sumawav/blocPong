@@ -27,9 +27,10 @@ var startGame = function() {
 
 var playGame = function() {
   var gameBoard = new GameBoard();
-  gameBoard.add( new Player(true) );
+  gameBoard.add( new Player(false) );
   gameBoard.add( new Computer(false) );
   gameBoard.add( new Ball() );
+  Game.setBoard(0, new DummyBG(true) )
   Game.setBoard(1, gameBoard);
 };
 
@@ -148,10 +149,18 @@ Ball.prototype.step = function(dt) {
   if (this.y + this.h > Game.height - ENDZONE && !this.dead) {
     reflection = this.board.reflect(this, OBJECT_PLAYER);
     reflection ? this.board.bounceAngle(this, reflection, OBJECT_PLAYER) : this.dead = true;
+    if (this.dead) {
+      Game.computerScore += 1;
+      Game.setBoard(2, new ScoreBoard(playGame) );
+    }
   }
   if (this.y < ENDZONE && !this.dead) {
     reflection = this.board.reflect(this, OBJECT_COMPUTER);
     reflection ? this.board.bounceAngle(this, reflection, OBJECT_COMPUTER) : this.dead = true;
+    if (this.dead) {
+      Game.playerScore += 1;
+      Game.setBoard(2, new ScoreBoard(playGame) );
+    }
   }
 };
 

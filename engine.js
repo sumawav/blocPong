@@ -1,5 +1,7 @@
 var Game = (function() {
   var boards = [];
+  this.playerScore = 0;
+  this.computerScore = 0;
 
   this.initialize = function(canvasElementId, callback) {
     this.canvas = document.getElementById(canvasElementId);
@@ -248,4 +250,43 @@ Paddle.prototype.draw = function(ctx) {
   ctx.fill();
   ctx.closePath();
   ctx.lineWidth = 1;
+};
+
+ScoreBoard = function(callback) {
+  var up = false;
+
+  this.draw = function(ctx) {
+    ctx.save();
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.textAlign = "center";
+    ctx.font = "bold 40px bangers";
+    ctx.fillText(Game.computerScore, Game.width/2, Game.height/2 - 40);
+    ctx.font = "bold 20px bangers";
+    ctx.fillText("Press <space> to Rage", Game.width/2, Game.height/2);
+    ctx.font = "bold 40px bangers";
+    ctx.fillText(Game.playerScore, Game.width/2, Game.height/2 + 40);
+
+    ctx.restore();
+  };
+
+  this.step = function(dt) {
+    if(!Game.keys['space']) {
+      up = true;
+    }
+    if (up && Game.keys['space'] && callback) {
+      Game.setBoard(2, null);
+      callback();
+    }
+  };
+};
+
+var DummyBG = function(clear) {
+  this.step = function(dt) { };
+  this.draw = function(ctx) {
+    if(clear) {
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, Game.width, Game.height);
+    }
+  };
 };

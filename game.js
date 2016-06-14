@@ -8,7 +8,7 @@
 var PI = Math.PI;
 var ENDZONE = 30;
 var PADDLE_WIDTH = 80;
-var ANGLE_SCALE_FACTOR = PI / 12;
+var ANGLE_SCALE_FACTOR = PI / 24;
 
 var OBJECT_BALL = 1,
     OBJECT_PLAYER = 2,
@@ -76,7 +76,12 @@ Computer.prototype = new Paddle();
 Computer.prototype.type = OBJECT_COMPUTER;
 Computer.prototype.step = function(dt) {
 
+
   this.target = this.target || this.board.findBall(this);
+
+  if (this.target.dead) {
+    return;
+  }
 
   // ball in comp side of court
   if (this.target.y + this.target.radius < Game.height / 3 &&
@@ -116,7 +121,6 @@ var Ball = function() {
 
   var magnitude = 200;
   var theta = PI / 4;
-  var theta = PI / 2;
   this.vx = magnitude * Math.cos(theta);
   this.vy = magnitude * Math.sin(theta);
   this.radian = PI/4;

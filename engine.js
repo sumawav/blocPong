@@ -275,7 +275,7 @@ ScoreBoard = function(callback) {
       up = true;
     }
     if (up && Game.keys['space'] && callback) {
-      Game.setBoard(2, null);
+      Game.setBoard(2, new DummyBG(false));
       callback();
     }
   };

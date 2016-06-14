@@ -19,7 +19,7 @@ window.addEventListener("load", function() {
 });
 
 var startGame = function() {
-  Game.setBoard(0, new Banner("blocPONG",
+  Game.setBoard(2, new Banner("blocPONG",
                               "Press <space> to RAGE",
                               true,
                               playGame));
@@ -32,6 +32,19 @@ var playGame = function() {
   gameBoard.add( new Ball() );
   Game.setBoard(0, new DummyBG(true) )
   Game.setBoard(1, gameBoard);
+  Game.setBoard(2, new DummyBG(false));
+};
+
+var playNewGame = function() {
+  var gameBoard = new GameBoard();
+  gameBoard.add( new Player(false) );
+  gameBoard.add( new Computer(false) );
+  gameBoard.add( new Ball() );
+  Game.playerScore = 0;
+  Game.computerScore = 0;
+  Game.setBoard(0, new DummyBG(true) )
+  Game.setBoard(1, gameBoard);
+  Game.setBoard(2, new DummyBG(false));
 };
 
 var Player = function(clear) {
@@ -151,7 +164,14 @@ Ball.prototype.step = function(dt) {
     reflection ? this.board.bounceAngle(this, reflection, OBJECT_PLAYER) : this.dead = true;
     if (this.dead) {
       Game.computerScore += 1;
-      Game.setBoard(2, new ScoreBoard(playGame) );
+      if (Game.computerScore > 5) {
+        Game.setBoard(2, new Banner("You Lose!",
+                                    "press <space> to Rage again",
+                                    false,
+                                    playNewGame));
+      } else {
+        Game.setBoard(2, new ScoreBoard(playGame) );
+      }
     }
   }
   if (this.y < ENDZONE && !this.dead) {
@@ -159,7 +179,15 @@ Ball.prototype.step = function(dt) {
     reflection ? this.board.bounceAngle(this, reflection, OBJECT_COMPUTER) : this.dead = true;
     if (this.dead) {
       Game.playerScore += 1;
-      Game.setBoard(2, new ScoreBoard(playGame) );
+      if (Game.playerScore > 5){
+        Game.setBoard(2, new Banner("You Win!",
+                                    "press <space> to Rage again",
+                                    false,
+                                    playNewGame));
+      } else {
+        Game.setBoard(2, new ScoreBoard(playGame) );
+      }
+
     }
   }
 };
